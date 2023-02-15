@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let intervalID = null;
     function intervalManager(flag) {
         if(flag){
-            intervalID = setInterval(() => count.innerText++, 5000);
+            intervalID = setInterval(() => count.innerText++, 1000);
         }
         else{
             clearInterval(intervalID);
@@ -17,58 +17,54 @@ document.addEventListener("DOMContentLoaded", () => {
     //Invoke interval to start
     intervalManager(true)
     
-    //Create Variables for button and create restart button
+    //Create Variables for pre-existing buttons
     let addButton = document.getElementById("plus")
     let subButton = document.getElementById("minus")
     let likeButton = document.getElementById("heart")
     let pauseButton = document.getElementById("pause")
-    let restartButton = document.createElement("button")
 
-    let test = document.getElementsByTagName("body")
-    
+    //Create variable for comment form
+    let commentForm = document.querySelector("form")
+
+    //Create restart button and append it to DOM
+    let restartButton = document.createElement("button")
+    restartButton.innerText = "restart"
+    let body = document.querySelector("body")
+    body.children[5].insertAdjacentElement("afterend", restartButton)
     
     //Add Events for buttons
-    addButton.addEventListener('click', (e) => count.innerText++);
+    addButton.addEventListener('click', () => count.innerText++);
     subButton.addEventListener('click', () => count.innerText--);
     likeButton.addEventListener('click', displayLikes);
     pauseButton.addEventListener('click', pauseFunctionality);
+    restartButton.addEventListener('click', restartFunctionality);
+
+    //Add events for form
+    commentForm.addEventListener('submit', commentFunctionality)
     
     //Callback Functions for button events
+
     function displayLikes(event){
-        let newLine = document.createElement("li");
-        //console.log(newLine)
         let whereToPutLikes = document.querySelector('.likes');
         let likesList = whereToPutLikes.getElementsByTagName("li");
-    
+        let i = parseInt(count.innerText)
 
-        //1: Iterate over every element in UL. 2: If element already exists (includes number) update it. 3: if not, create element.
-        if(likesList.length === 0)
+        if(likesList[i] === undefined)
         {
+            let newLine = document.createElement("li");
             newLine.innerText = `${count.innerText} has been liked 1 time.`;
             whereToPutLikes.appendChild(newLine)
         }
         else 
         {
-            let countInt = parseInt(count.innerText)
-            for (let i = 0; i < likesList.length; i++) {
-                let [number, , , , amount, ] = likesList[i].innerText.split(' ');
-                let amountInt = parseInt(amount)
-                let numberInt = parseInt(number)
-                
-                if (numberInt === countInt) {
-                    amountInt++
-                    console.log(likesList[i].innerText)
-                    likesList[i].innerText = `${countInt} has been liked ${amountInt} times.`
-                }
-                else {
-                    newLine.innerText = `${count.innerText} has been liked 1 time.`;
-                    whereToPutLikes.appendChild(newLine);
-                }
-            }
+            console.log(likesList[i])
+            const stringArray = likesList[i].innerText.split(" ")
+            let likesAmount = parseInt(stringArray[4]) + 1
+            likesList[i].innerText = `${i} has been liked ${likesAmount} times.`
+            
         }
     }
        
-
     function pauseFunctionality(event){
         if(pauseButton.innerText === "pause")
         {
@@ -86,9 +82,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
+    function restartFunctionality(event){
+        addButton.disabled = false;
+        subButton.disabled = false;
+        likeButton.disabled = false;
+        pauseButton.innerText = "pause";
+        intervalManager(false)
+        intervalManager(true)
+        count.innerText = "0"
+    }
 
     function commentFunctionality(event){
+        event.preventDefault()
+        let p = document.createElement("p")
+        p.textContent = event.target.comment.value
+        console.log(p)
+        let placeToPutComments = document.querySelector("h3")
+        placeToPutComments.appendChild(p)
 
     }
 })
